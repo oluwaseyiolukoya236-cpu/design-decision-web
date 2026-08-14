@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -31,7 +31,7 @@ const STATUS_FILTERS = [
   { label: 'Archived', value: 'ARCHIVED' },
 ];
 
-export default function AdminProjectsPage() {
+function AdminProjectsContent() {
   const user = useAuthStore((s) => s.user);
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status') ?? undefined;
@@ -64,7 +64,7 @@ export default function AdminProjectsPage() {
             className={`text-sm px-3 py-1.5 rounded border transition-colors cursor-pointer ${
               statusFilter === f.value
                 ? 'bg-espresso text-parchment border-espresso'
-                : 'border-parchment/30 text-espresso hover:bg-espresso/10'
+                : 'border-parchment/30 text-espresso hover:bg-parchment/10'
             }`}
           >
             {f.label}
@@ -113,9 +113,7 @@ export default function AdminProjectsPage() {
                       <p className="text-xs text-espresso/50">{p.location}</p>
                     )}
                   </td>
-                  <td className="py-2 px-4 text-espresso/70">
-                    {p.designer.fullName}
-                  </td>
+                  <td className="py-2 px-4 text-espresso/70">{p.designer.fullName}</td>
                   <td className="py-2 px-4">
                     <span className="text-xs px-2 py-1 rounded bg-espresso/10 text-espresso">
                       {p.status}
@@ -132,5 +130,13 @@ export default function AdminProjectsPage() {
         </div>
       )}
     </DashboardShell>
+  );
+}
+
+export default function AdminProjectsPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminProjectsContent />
+    </Suspense>
   );
 }
