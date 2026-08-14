@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
@@ -23,7 +23,7 @@ const ROLE_FILTERS = [
   { label: 'Admins', value: 'ADMIN' },
 ];
 
-export default function AdminUsersPage() {
+function AdminUsersContent() {
   const user = useAuthStore((s) => s.user);
   const searchParams = useSearchParams();
   const initialRole = searchParams.get('role') ?? undefined;
@@ -56,7 +56,7 @@ export default function AdminUsersPage() {
             className={`text-sm px-3 py-1.5 rounded border transition-colors cursor-pointer ${
               roleFilter === f.value
                 ? 'bg-espresso text-parchment border-espresso'
-                : 'border-parchment/30 text-espresso hover:bg-espresso/10'
+                : 'border-parchment/30 text-espresso hover:bg-parchment/10'
             }`}
           >
             {f.label}
@@ -67,8 +67,7 @@ export default function AdminUsersPage() {
       {isLoading && <p className="text-sm text-espresso/60">Loading users...</p>}
 
       {error && (
-        <p className="text-sm text-red-600"
-        >
+        <p className="text-sm text-red-600">
           Couldn't load users. Check that the API is running.
         </p>
       )}
@@ -115,5 +114,13 @@ export default function AdminUsersPage() {
         </div>
       )}
     </DashboardShell>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminUsersContent />
+    </Suspense>
   );
 }
